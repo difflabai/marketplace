@@ -2,72 +2,53 @@
 
 A collection of skills and plugins for Claude Code.
 
-## Installing Skills
+## Installing
 
-### Automatic Installation
-
-Ask Claude to install a skill:
+Add the marketplace, then install a plugin:
 
 ```
-Install the dreamsolve skill from the marketplace
+/plugin marketplace add difflabai/marketplace
+/plugin install dreamsolve@marketplace
 ```
 
-Claude will:
-1. Read the skill's `manifest.json` to get the MCP server configuration
-2. Add the MCP server to your `~/.claude/settings.json`
-3. Prompt you to restart Claude Code
+MCP servers are configured automatically on install.
 
-### Manual Installation
+## Available Plugins
 
-1. Navigate to the skill directory
-2. Copy the `mcpServer` configuration from `manifest.json`
-3. Add it to your `~/.claude/settings.json` under `mcpServers`
-4. Restart Claude Code
+| Plugin | Description |
+|--------|-------------|
+| [dreamsolve](./plugins/dreamsolve) | AI-powered project and task management via DreamSolve MCP |
 
-## Available Skills
-
-| Skill | Description |
-|-------|-------------|
-| [dreamsolve](./skills/dreamsolve) | AI-powered project and task management via MCP |
-| [marketplace-installer](./skills/marketplace-installer) | Utility to install other marketplace skills |
-
-## Skill Structure
-
-Each skill contains:
+## Testing Locally
 
 ```
-skills/<skill-name>/
-├── SKILL.md        # Human-readable documentation
-└── manifest.json   # Machine-readable configuration
+/plugin marketplace add ./path/to/this/repo
+/plugin install dreamsolve@marketplace
 ```
 
-### manifest.json Schema
+## Structure
 
-```json
-{
-  "name": "skill-name",
-  "version": "1.0.0",
-  "description": "What the skill does",
-  "mcpServer": {
-    "server-name": {
-      "command": "npx",
-      "args": ["..."]
-    }
-  },
-  "tools": [
-    { "name": "toolName", "description": "What it does" }
-  ]
-}
+```
+.claude-plugin/
+  marketplace.json              # Marketplace catalog
+plugins/
+  dreamsolve/
+    .claude-plugin/
+      plugin.json               # Plugin metadata
+    .mcp.json                   # MCP server configuration (auto-installed)
+    skills/
+      dreamsolve/
+        SKILL.md                # Skill definition
 ```
 
 ## Contributing
 
-To add a new skill:
-
-1. Create a directory under `skills/` with your skill name
-2. Add a `manifest.json` with the MCP server configuration
-3. Add a `SKILL.md` with documentation and usage examples
-4. Submit a pull request
+1. Create a directory under `plugins/` with your plugin name
+2. Add `.claude-plugin/plugin.json` with name, description, and author
+3. Add `.mcp.json` if your plugin needs an MCP server
+4. Add skills under `skills/<name>/SKILL.md`
+5. Register the plugin in `.claude-plugin/marketplace.json`
+6. Submit a pull request
 
 ## License
 
