@@ -1,7 +1,7 @@
 {
-  "name": "marketplace",
+  "name": "difflabai",
   "owner": {
-    "name": "DiffLab"
+    "name": "Differential AI Lab"
   },
   "metadata": {
     "description": "Skills and plugins for Claude Code"
