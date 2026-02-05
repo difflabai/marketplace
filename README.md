@@ -8,7 +8,7 @@ Add the marketplace, then install a plugin:
 
 ```
 /plugin marketplace add difflabai/marketplace
-/plugin install dreamsolve@marketplace
+/plugin install dreamsolve@difflabai
 ```
 
 MCP servers are configured automatically on install.
@@ -23,7 +23,7 @@ MCP servers are configured automatically on install.
 
 ```
 /plugin marketplace add ./path/to/this/repo
-/plugin install dreamsolve@marketplace
+/plugin install dreamsolve@difflabai
 ```
 
 ## Structure
