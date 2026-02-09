@@ -1,0 +1,23 @@
+{
+  "name": "difflabai",
+  "owner": {
+    "name": "Differential AI Lab"
+  },
+  "metadata": {
+    "description": "Skills and plugins for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "dreamsolve",
+      "source": "./plugins/dreamsolve",
+      "description": "Project management, file handling, and AI agents via DreamSolve MCP",
+      "version": "1.0.0",
+      "author": {
+        "name": "DreamSolve"
+      },
+      "homepage": "https://dreamsolve.ai/docs/guides/connecting-mcp",
+      "category": "productivity",
+      "tags": ["project-management", "tasks", "mcp"]
+    }
+  ]
+}
