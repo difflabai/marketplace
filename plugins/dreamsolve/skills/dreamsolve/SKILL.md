@@ -1,14 +1,15 @@
 ---
-description: Manage projects, tasks, files, and agents in DreamSolve
+description: Manage projects, tasks, their files, and run agents in DreamSolve
 ---
 
 Use DreamSolve to manage projects, tasks, nodes, files, and AI agents.
 
 ## Node Management
 
-Nodes are the core building blocks. Types include: Action, Agent, AgentScope, Assignment, BusinessUnit, Company, Context, Decision, Delta, Experiment, File, Hypothesis, Issue, KnowledgeTuple, Log, Memory, Module, Package, Person, Problem, Project, Resource, Task, Team.
+Nodes are the core building blocks. Company, Project, and Task are the most used. 
+Other Types include: Action, Assignment, BusinessUnit, Context, Decision, Delta, Experiment, File, Hypothesis, Issue, KnowledgeTuple, Log, Memory, Module, Package, Person, Problem, Resource, Team.
 
-- **createNode**: Create a node of any type. Requires `type` and `name`. Optional: `description`, `parentId`, `containerId`, `status` (pending/running/completed/onhold), `data`.
+- **createNode**: Create a node of any type. Requires `type` and `name`. Optional: `description`, `parentId`, `status` (pending/running/completed/onhold), `data`.
 - **readNode**: Read a node by ID. Use `includeChildren: true` to fetch child nodes.
 - **updateNode**: Update a node's name, description, status, parentId, containerId, or data.
 - **deleteNode**: Soft-delete a node and all its children.

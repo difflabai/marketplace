@@ -1,9 +1,9 @@
 {
   "name": "dreamsolve",
-  "description": "Project management, file handling, and AI agents via DreamSolve MCP",
+  "description": "Project and task management, file handling, and AI agents via DreamSolve MCP",
   "version": "1.0.0",
   "author": {
-    "name": "DreamSolve"
+    "name": "Differential AI Lab"
   },
   "homepage": "https://dreamsolve.ai/docs/guides/connecting-mcp"
 }
