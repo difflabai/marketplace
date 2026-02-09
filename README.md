@@ -17,7 +17,7 @@ MCP servers are configured automatically on install.
 
 | Plugin | Description |
 |--------|-------------|
-| [dreamsolve](./plugins/dreamsolve) | AI-powered project and task management via DreamSolve MCP |
+| [dreamsolve](./plugins/dreamsolve) | Project management, file handling, and AI agents via DreamSolve MCP |
 
 ## Testing Locally
 

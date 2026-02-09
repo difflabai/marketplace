@@ -10,7 +10,7 @@
     {
       "name": "dreamsolve",
       "source": "./plugins/dreamsolve",
-      "description": "AI-powered project and task management via DreamSolve MCP",
+      "description": "Project management, file handling, and AI agents via DreamSolve MCP",
       "version": "1.0.0",
       "author": {
         "name": "DreamSolve"
