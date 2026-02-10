@@ -18,6 +18,17 @@
       "homepage": "https://dreamsolve.ai/docs/guides/connecting-mcp",
       "category": "productivity",
       "tags": ["project-management", "tasks", "mcp"]
+    },
+    {
+      "name": "pde",
+      "source": "./skills/pde",
+      "description": "Product Delivery Engine — automate DiffLab's 6-stage product pipeline",
+      "version": "1.0.0",
+      "author": {
+        "name": "DiffLab AI"
+      },
+      "category": "productivity",
+      "tags": ["product", "pipeline", "delivery"]
     }
   ]
 }
