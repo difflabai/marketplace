@@ -21,6 +21,28 @@
 
 ---
 
+## Market Signals
+
+What triggered this idea? What evidence suggests the market is ready?
+
+| Signal | Source | Date |
+|--------|--------|------|
+| [Signal 1] | [Where you heard/saw it] | [When] |
+| [Signal 2] | [Where you heard/saw it] | [When] |
+| [Signal 3] | [Where you heard/saw it] | [When] |
+
+---
+
+## Current Solutions & Why They Fall Short
+
+| Solution | What It Does | Why It Falls Short |
+|----------|-------------|-------------------|
+| [Solution 1] | [Description] | [Specific limitation] |
+| [Solution 2] | [Description] | [Specific limitation] |
+| [Solution 3] | [Description] | [Specific limitation] |
+
+---
+
 ## Competitive Positioning
 
 ### Landscape

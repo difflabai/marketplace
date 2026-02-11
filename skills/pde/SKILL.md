@@ -12,12 +12,10 @@ Specification-driven product pipeline. High-level aims (behavior + evaluation) a
 ### New Product
 
 1. User provides product idea or market signal
-2. Research the market (WebSearch for trends, competitors, TAM)
-3. Generate `behavior.md` from `assets/templates/behavior.md`
-4. Write to `specs/{product-name}/behavior.md` in the PDE repo
-5. Present spec and ask user to approve
-6. On approval, launch 3 parallel analysis subagents (ICP, monetization, business model)
-7. Present analysis results, then advance to Filter
+2. Generate `behavior.md` from `assets/templates/behavior.md`
+3. Write locally to `specs/{product-name}/behavior.md` and present to user
+4. On approval, push to PDE repo via `gh api` and launch 3 parallel analysis subagents (ICP, monetization, business model)
+5. Present analysis results, then advance to Filter
 
 ### Advance Existing Product
 
@@ -67,39 +65,46 @@ To start a new implementation: create `implementation-NN/` where NN is the next 
 
 ## PDE Repo Operations
 
-The PDE repo lives at `https://github.com/difflabai/pde`. All product artifacts go in `specs/{product-name}/`.
+The PDE repo lives at `github.com/difflabai/pde`. All product artifacts go in `specs/{product-name}/`. Use the `gh` CLI for all repo operations — do not clone the repo locally.
 
-### Clone or Update
-
-Before any operation, ensure the repo is present and up-to-date:
+### Reading Files
 
 ```bash
-# Clone if not already present
-if [ ! -d "pde" ]; then
-  git clone https://github.com/difflabai/pde.git
-fi
-# Always pull latest before writing
-cd pde && git pull origin main
+gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md \
+  --jq '.content' | base64 -d
 ```
 
-### Initialize Product Directory
+### Writing Files
+
+Create or update a file in the repo:
 
 ```bash
-mkdir -p specs/{product-name}
+# Write a new file (no SHA needed)
+gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md \
+  --method PUT \
+  --field message="{Stage}: {product-name} — {brief description}" \
+  --field content="$(base64 -i /path/to/local/file.md)"
+
+# Update an existing file (SHA required)
+SHA=$(gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md --jq '.sha')
+gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md \
+  --method PUT \
+  --field message="{Stage}: {product-name} — {brief description}" \
+  --field content="$(base64 -i /path/to/local/file.md)" \
+  --field sha="$SHA"
 ```
 
-### Commit Stage Artifact
-
-After user approves each stage artifact:
+### Listing Product Files (Check Status)
 
 ```bash
-git pull origin main
-git add specs/{product-name}/
-git commit -m "{Stage}: {product-name} — {brief description}"
-git push origin main
+gh api repos/difflabai/pde/contents/specs/{product-name} --jq '.[].name'
 ```
 
-If push fails due to conflicts, pull again, resolve conflicts (prefer keeping both changes), and retry.
+### Workflow
+
+1. Generate the artifact locally in `specs/{product-name}/` within the current workspace
+2. Present to user for approval
+3. On approval, push to the PDE repo using `gh api`
 
 ### Product Naming
 
@@ -130,12 +135,12 @@ Use kebab-case: `ai-code-reviewer`, `spec-validator`, `landing-gen`
 **Input:** Market signals, customer conversations, training insights, AI trends
 **Output:** `specs/{product-name}/behavior.md`
 
-1. Research the problem space using WebSearch — market trends, competitors, customer pain
-2. Read the template from `assets/templates/behavior.md`
-3. Fill in: problem statement, desired behaviors, boundaries, value proposition, market signals, strategic alignment
-4. Focus on what the product should do and must not do, not how to build it
-5. Write to PDE repo and present to user
-6. **Gate:** User approves behavior spec → launch parallel analysis
+1. Read the template from `assets/templates/behavior.md`
+2. Fill in: problem statement, desired behaviors, boundaries, value proposition, strategic alignment
+3. Focus on what the product should do and must not do, not how to build it
+4. Do NOT include market research, competitor analysis, or market signals — those belong in the parallel analysis files (business-model-analysis.md)
+5. Write locally to `specs/{product-name}/behavior.md` and present to user
+6. **Gate:** User approves behavior spec → push to PDE repo via `gh api`, then launch parallel analysis
 
 ### Parallel Analysis (Post-Intake)
 
@@ -153,24 +158,23 @@ If any skill file is missing, warn the user and skip that analysis.
 Task call 1 — ICP Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"ICP analysis for {product-name}"`
-- `prompt`: `"You are an Ideal Customer Profile analyst. Read the behavior spec at specs/{product-name}/behavior.md in the difflabai/pde repo. Read the ICP analysis skill instructions from skills/icp-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result to specs/{product-name}/icp-analysis.md in the PDE repo."`
+- `prompt`: `"You are an Ideal Customer Profile analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Read the ICP analysis skill instructions from skills/icp-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/icp-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/icp-analysis.md --method PUT --field message='Analysis: {product-name} — ICP' --field content=\"$(base64 -i specs/{product-name}/icp-analysis.md)\""`
 
 Task call 2 — Monetization Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Monetization analysis for {product-name}"`
-- `prompt`: `"You are a monetization strategy analyst. Read the behavior spec at specs/{product-name}/behavior.md in the difflabai/pde repo. Read the monetization analysis skill instructions from skills/monetization-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result to specs/{product-name}/monetization-analysis.md in the PDE repo."`
+- `prompt`: `"You are a monetization strategy analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Read the monetization analysis skill instructions from skills/monetization-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/monetization-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/monetization-analysis.md --method PUT --field message='Analysis: {product-name} — monetization' --field content=\"$(base64 -i specs/{product-name}/monetization-analysis.md)\""`
 
 Task call 3 — Business Model Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Business model analysis for {product-name}"`
-- `prompt`: `"You are a business model analyst. Read the behavior spec at specs/{product-name}/behavior.md in the difflabai/pde repo. Read the business model analysis skill instructions from skills/business-model-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result to specs/{product-name}/business-model-analysis.md in the PDE repo."`
+- `prompt`: `"You are a business model analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Read the business model analysis skill instructions from skills/business-model-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/business-model-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/business-model-analysis.md --method PUT --field message='Analysis: {product-name} — business model' --field content=\"$(base64 -i specs/{product-name}/business-model-analysis.md)\""`
 
 **After all 3 Task results return:**
 
 1. Check each result for success. If any analysis failed, inform the user which one(s) failed and ask whether to retry, skip, or abort
 2. Present a summary of each successful analysis to the user
-3. Commit all analysis artifacts together: `git commit -m "Analysis: {product-name} — ICP, monetization, business model"`
-4. Advance to Stage 2 (Filter)
+3. Advance to Stage 2 (Filter)
 
 ### Stage 2: Filter
 
@@ -275,7 +279,7 @@ Every stage follows this pattern:
    - **Approve** → commit artifact, advance
    - **Iterate** → user provides specific feedback; incorporate it, regenerate the artifact, and present again (do not advance until approved)
    - **Decommission** → write `DECOMMISSIONED.md` with reason
-4. **Commit** — On approval: `git pull`, `git add`, `git commit`, `git push`
+4. **Push** — On approval: push artifact to PDE repo via `gh api` (see PDE Repo Operations)
 
 ## Decommissioning a Product
 
@@ -287,7 +291,7 @@ When a product fails at any stage:
    - Reason (which criteria from `evaluation.md` failed)
    - Lessons learned
    - Whether pivot is recommended
-2. Commit: `git commit -m "DECOMMISSIONED: {product-name} — {reason}"`
+2. Push to PDE repo via `gh api` with message: `"DECOMMISSIONED: {product-name} — {reason}"`
 
 ## Research Capabilities
 

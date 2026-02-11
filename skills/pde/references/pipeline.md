@@ -42,36 +42,27 @@ Transform raw market signals into a behavior spec that captures what the product
 
 ### Input Sources
 
-- Market signals (industry trends, funding rounds, new technologies)
 - Customer conversations (pain points, feature requests, complaints)
 - Training insights (workshop discoveries, skill gaps, workflow friction)
-- AI trends (new model capabilities, emerging use cases)
+- Product ideas from team brainstorming or user feedback
 
 ### Research Process
 
 1. **Problem discovery** — What problem exists? How painful is it?
 2. **Customer identification** — Who has this problem? How many of them?
-3. **Solution landscape** — What exists today? Where are the gaps?
-4. **Switch motivation** — Why would someone abandon their current approach?
-5. **Strategic fit** — How does this connect to DiffLab's mission and capabilities?
+3. **Switch motivation** — Why would someone abandon their current approach?
+4. **Strategic fit** — How does this connect to DiffLab's mission and capabilities?
 
-### WebSearch Queries to Run
-
-- `"{problem domain}" market size 2025 2026`
-- `"{problem domain}" pain points frustrations`
-- `"{competitor names}" pricing features limitations`
-- `"{problem domain}" trends forecast`
-- `"{customer segment}" tools software spending`
+Note: Market signals, competitor analysis, and current solution landscape are captured during the parallel analysis phase (business-model-analysis.md), not in the behavior spec.
 
 ### Output Quality Checklist
 
 - [ ] Problem is specific and measurable, not vague
 - [ ] Target customer is a real segment, not "everyone"
 - [ ] Desired behaviors describe outcomes, not implementations
-- [ ] At least 2 current solutions identified with specific limitations
-- [ ] Switch motivation is compelling (not just "ours is better")
+- [ ] Value proposition articulates clear switch motivation (not just "ours is better")
 - [ ] Boundaries defined: scope limits, prohibited behaviors, and safety/permission controls
-- [ ] Market signals cite specific sources
+- [ ] No market research, competitor analysis, or market signals (those go in analysis files)
 - [ ] No technology choices or architecture details (those go in implementation folders)
 
 ---
@@ -325,7 +316,7 @@ If after 90 days:
 
 ### Artifact Commit Messages
 
-Follow this format:
+When pushing artifacts to the PDE repo via `gh api`, use this format for the `message` field:
 ```
 Stage N ({Stage Name}): {product-name} — {brief description}
 ```

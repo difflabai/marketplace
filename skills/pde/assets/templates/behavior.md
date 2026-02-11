@@ -16,14 +16,6 @@
 **How painful is it?**
 [Frequency, cost in time/money/frustration, consequences of not solving it]
 
-## Current Solutions & Why They Fall Short
-
-| Solution | What It Does | Why It Falls Short |
-|----------|-------------|-------------------|
-| [Solution 1] | [Description] | [Specific limitation] |
-| [Solution 2] | [Description] | [Specific limitation] |
-| [Solution 3] | [Description] | [Specific limitation] |
-
 ## Desired Behavior
 
 Describe what the product should do from the user's perspective. Focus on outcomes, not implementation.
@@ -69,16 +61,6 @@ Actions that require human approval or are restricted to specific roles/systems.
 
 **One-sentence pitch:**
 > [Product Name] helps [target customer] [achieve outcome] by [key differentiator], unlike [current solutions] which [limitation].
-
-## Market Signals
-
-What triggered this idea?
-
-| Signal | Source | Date |
-|--------|--------|------|
-| [Signal 1] | [Where you heard/saw it] | [When] |
-| [Signal 2] | [Where you heard/saw it] | [When] |
-| [Signal 3] | [Where you heard/saw it] | [When] |
 
 ## Strategic Alignment
 
