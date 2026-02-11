@@ -123,4 +123,4 @@ Explicitly identify who is NOT a good customer:
 
 ## Output
 
-Write the analysis to the product's PDE spec directory using the template at `assets/templates/icp-analysis.md`. The analysis feeds directly into the PDE pipeline's Stage 2 (Filter) to validate market fit and competitive edge.
+Write the analysis to the product's PDE spec directory using the template at `../pde/assets/templates/icp-analysis.md`. The analysis feeds directly into the PDE pipeline's Stage 2 (Filter) to validate market fit and competitive edge.

@@ -139,4 +139,4 @@ Identify and assess:
 
 ## Output
 
-Write the analysis to the product's PDE spec directory using the template at `assets/templates/monetization-analysis.md`. The analysis feeds into Stage 2 (Filter criterion 5: clear monetization) and Stage 3b (pricing tier validation).
+Write the analysis to the product's PDE spec directory using the template at `../pde/assets/templates/monetization-analysis.md`. The analysis feeds into Stage 2 (Filter criterion 5: clear monetization) and Stage 3b (pricing tier validation).
