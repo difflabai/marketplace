@@ -208,4 +208,4 @@ Identify upside scenarios:
 
 ## Output
 
-Write the analysis to the product's PDE spec directory using the template at `assets/templates/business-model-analysis.md`. The analysis feeds into Stage 2 (Filter) for scoring mission alignment, competitive edge, and monetization clarity.
+Write the analysis to the product's PDE spec directory using the template at `../pde/assets/templates/business-model-analysis.md`. The analysis feeds into Stage 2 (Filter) for scoring mission alignment, competitive edge, and monetization clarity.

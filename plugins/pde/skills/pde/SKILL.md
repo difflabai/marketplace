@@ -146,10 +146,10 @@ Use kebab-case: `ai-code-reviewer`, `spec-validator`, `landing-gen`
 
 After the user approves `behavior.md`, launch 3 parallel analysis subagents. Send all 3 Task tool calls in a **single message** so they run concurrently.
 
-Before launching, verify the companion skills exist:
-- `skills/icp-analysis/SKILL.md`
-- `skills/monetization-analysis/SKILL.md`
-- `skills/business-model-analysis/SKILL.md`
+Before launching, verify the companion skills exist (sibling directories within this plugin):
+- `../icp-analysis/SKILL.md`
+- `../monetization-analysis/SKILL.md`
+- `../business-model-analysis/SKILL.md`
 
 If any skill file is missing, warn the user and skip that analysis.
 
@@ -158,17 +158,17 @@ If any skill file is missing, warn the user and skip that analysis.
 Task call 1 — ICP Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"ICP analysis for {product-name}"`
-- `prompt`: `"You are an Ideal Customer Profile analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Read the ICP analysis skill instructions from skills/icp-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/icp-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/icp-analysis.md --method PUT --field message='Analysis: {product-name} — ICP' --field content=\"$(base64 -i specs/{product-name}/icp-analysis.md)\""`
+- `prompt`: `"You are an Ideal Customer Profile analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/icp-analysis/SKILL.md'. Read the ICP analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/icp-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/icp-analysis.md --method PUT --field message='Analysis: {product-name} — ICP' --field content=\"$(base64 -i specs/{product-name}/icp-analysis.md)\""`
 
 Task call 2 — Monetization Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Monetization analysis for {product-name}"`
-- `prompt`: `"You are a monetization strategy analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Read the monetization analysis skill instructions from skills/monetization-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/monetization-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/monetization-analysis.md --method PUT --field message='Analysis: {product-name} — monetization' --field content=\"$(base64 -i specs/{product-name}/monetization-analysis.md)\""`
+- `prompt`: `"You are a monetization strategy analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/monetization-analysis/SKILL.md'. Read the monetization analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/monetization-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/monetization-analysis.md --method PUT --field message='Analysis: {product-name} — monetization' --field content=\"$(base64 -i specs/{product-name}/monetization-analysis.md)\""`
 
 Task call 3 — Business Model Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Business model analysis for {product-name}"`
-- `prompt`: `"You are a business model analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Read the business model analysis skill instructions from skills/business-model-analysis/SKILL.md. Read the output template from skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/business-model-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/business-model-analysis.md --method PUT --field message='Analysis: {product-name} — business model' --field content=\"$(base64 -i specs/{product-name}/business-model-analysis.md)\""`
+- `prompt`: `"You are a business model analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/business-model-analysis/SKILL.md'. Read the business model analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/business-model-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/business-model-analysis.md --method PUT --field message='Analysis: {product-name} — business model' --field content=\"$(base64 -i specs/{product-name}/business-model-analysis.md)\""`
 
 **After all 3 Task results return:**
 
