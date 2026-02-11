@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Product Name] — [Value Proposition]</title>
+    <!-- ANALYTICS: Replace G-XXXXXXXXXX with your Google Analytics 4 measurement ID -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: #fafafa;
+        }
+        .hero-content {
+            max-width: 640px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: #555;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Pain Points */
+        .pain-points {
+            text-align: left;
+            list-style: none;
+            margin: 2rem 0 2.5rem;
+        }
+        .pain-points li {
+            padding: 0.75rem 0;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .pain-points li:last-child {
+            border-bottom: none;
+        }
+
+        /* CTA Button */
+        .cta {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .cta:hover {
+            background: #1d4ed8;
+        }
+
+        /* ============================================
+           STAGE 3b ADDITIONS
+           Uncomment and customize for Solution + Pricing
+           ============================================ */
+
+        /*
+        .solution {
+            padding: 4rem 2rem;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .solution h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .solution p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+        .features {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+        .features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .features li::before {
+            content: "\2713";
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .pricing {
+            padding: 4rem 2rem;
+            background: #f8fafc;
+            text-align: center;
+        }
+        .pricing h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        .pricing-grid {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .tier {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 2rem;
+            width: 260px;
+            text-align: center;
+        }
+        .tier.popular {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px #2563eb;
+        }
+        .tier h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .tier .price {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .tier .period {
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+        .tier ul {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+        .tier ul li {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .waitlist-section {
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        .waitlist-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .waitlist-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .waitlist-form input,
+        .waitlist-form select {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .waitlist-form button {
+            width: 100%;
+            padding: 1rem;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .waitlist-form button:hover {
+            background: #1d4ed8;
+        }
+        */
+
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.75rem; }
+            .hero .subtitle { font-size: 1rem; }
+            .pain-points li { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STAGE 3a: Problem-focused hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>[Problem-Focused Headline]</h1>
+            <p class="subtitle">[One sentence describing the pain — speak to the target customer directly]</p>
+
+            <ul class="pain-points">
+                <li>[Pain point 1 — specific, recognizable frustration]</li>
+                <li>[Pain point 2 — specific, recognizable frustration]</li>
+                <li>[Pain point 3 — specific, recognizable frustration]</li>
+            </ul>
+
+            <a href="[SURVEY_FUNNEL_URL]" class="cta" id="ctaButton">Share Your Experience</a>
+        </div>
+    </section>
+
+    <!-- ============================================
+         STAGE 3b ADDITIONS
+         Uncomment for Solution + Pricing + Waitlist
+         ============================================ -->
+
+    <!--
+    <section class="solution">
+        <h2>Introducing [Product Name]</h2>
+        <p>[One paragraph describing how the product solves the problem above]</p>
+        <ul class="features">
+            <li>[Feature 1 — benefit, not just feature name]</li>
+            <li>[Feature 2 — benefit]</li>
+            <li>[Feature 3 — benefit]</li>
+        </ul>
+    </section>
+
+    <section class="pricing">
+        <h2>Simple Pricing</h2>
+        <div class="pricing-grid">
+            <div class="tier">
+                <h3>Starter</h3>
+                <div class="price">$[X]</div>
+                <div class="period">per month</div>
+                <ul>
+                    <li>[Feature]</li>
+                    <li>[Feature]</li>
+                </ul>
+                <a href="#waitlist" class="cta">Get Started</a>
+            </div>
+            <div class="tier popular">
+                <h3>Pro</h3>
+                <div class="price">$[X]</div>
+                <div class="period">per month</div>
+                <ul>
+                    <li>Everything in Starter</li>
+                    <li>[Feature]</li>
+                    <li>[Feature]</li>
+                </ul>
+                <a href="#waitlist" class="cta">Get Started</a>
+            </div>
+            <div class="tier">
+                <h3>Team</h3>
+                <div class="price">$[X]</div>
+                <div class="period">per month</div>
+                <ul>
+                    <li>Everything in Pro</li>
+                    <li>[Feature]</li>
+                    <li>[Feature]</li>
+                </ul>
+                <a href="#waitlist" class="cta">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="waitlist-section" id="waitlist">
+        <h2>Get Early Access</h2>
+        <p>Join the waitlist to be first when we launch.</p>
+        <form class="waitlist-form" id="waitlistForm">
+            <input type="text" name="name" placeholder="Your name" required>
+            <input type="email" name="email" placeholder="Your email" required>
+            <select name="tier">
+                <option value="">Which plan interests you?</option>
+                <option value="starter">Starter ($[X]/mo)</option>
+                <option value="pro">Pro ($[X]/mo)</option>
+                <option value="team">Team ($[X]/mo)</option>
+            </select>
+            <button type="submit">Join Waitlist</button>
+        </form>
+    </section>
+    -->
+
+    <script>
+        // Track CTA click
+        document.getElementById('ctaButton').addEventListener('click', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'cta_click', {
+                    event_category: 'engagement',
+                    event_label: 'survey_start'
+                });
+            }
+        });
+
+        // STAGE 3b: Uncomment for waitlist form handling
+        /*
+        document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(e.target);
+            var data = Object.fromEntries(formData);
+
+            // TODO: Send to your backend (Google Sheets, Airtable, API endpoint)
+            console.log('Waitlist signup:', data);
+
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'waitlist_signup', {
+                    event_category: 'conversion',
+                    tier: data.tier || 'none'
+                });
+            }
+
+            // Show confirmation
+            e.target.innerHTML = '<p style="padding:2rem;font-size:1.25rem;">You\'re on the list! We\'ll be in touch soon.</p>';
+        });
+        */
+    </script>
+</body>
+</html>

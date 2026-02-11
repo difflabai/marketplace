@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[Product Name] — Share Your Experience</title>
+    <!-- ANALYTICS: Replace G-XXXXXXXXXX with your Google Analytics 4 measurement ID -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            background: #fafafa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            background: #fff;
+            max-width: 520px;
+            width: 100%;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .intro {
+            color: #555;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .question {
+            margin-bottom: 1.75rem;
+        }
+        .question label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .question .hint {
+            display: block;
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: normal;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        }
+
+        /* Pain rating scale */
+        .rating-scale {
+            display: flex;
+            gap: 0;
+            margin-top: 0.5rem;
+        }
+        .rating-option {
+            flex: 1;
+            text-align: center;
+        }
+        .rating-option input[type="radio"] {
+            display: none;
+        }
+        .rating-option label {
+            display: block;
+            padding: 0.75rem 0.25rem;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.15s;
+        }
+        .rating-option:first-child label {
+            border-radius: 6px 0 0 6px;
+        }
+        .rating-option:last-child label {
+            border-radius: 0 6px 6px 0;
+        }
+        .rating-option label:hover {
+            background: #f0f4ff;
+        }
+        .rating-option input[type="radio"]:checked + label {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb;
+        }
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 0.25rem;
+        }
+
+        /* Progress */
+        .progress {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Submit */
+        button[type="submit"] {
+            width: 100%;
+            padding: 1rem;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: #1d4ed8;
+        }
+
+        /* Thank you state */
+        .thank-you {
+            text-align: center;
+            padding: 2rem 0;
+        }
+        .thank-you h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .thank-you p {
+            color: #555;
+        }
+
+        @media (max-width: 520px) {
+            .container { padding: 1.5rem; }
+            h1 { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="surveyContainer">
+        <h1>Help us understand your experience</h1>
+        <p class="intro">This takes about 2 minutes. Your responses help us build something useful.</p>
+        <p class="progress">4 questions</p>
+
+        <form id="surveyForm">
+
+            <!-- Q1: Role -->
+            <div class="question">
+                <label for="role">What's your role?</label>
+                <input type="text" id="role" name="role" placeholder="e.g., Engineering Manager, Designer, Founder" required>
+            </div>
+
+            <!-- Q2: Pain rating (CORE METRIC) -->
+            <div class="question">
+                <label>
+                    How painful is [PROBLEM] for you?
+                    <span class="hint">Think about how much time, money, or frustration this causes.</span>
+                </label>
+                <div class="rating-scale">
+                    <div class="rating-option">
+                        <input type="radio" name="pain" id="pain1" value="1" required>
+                        <label for="pain1">1</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="pain" id="pain2" value="2">
+                        <label for="pain2">2</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="pain" id="pain3" value="3">
+                        <label for="pain3">3</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="pain" id="pain4" value="4">
+                        <label for="pain4">4</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="pain" id="pain5" value="5">
+                        <label for="pain5">5</label>
+                    </div>
+                </div>
+                <div class="rating-labels">
+                    <span>Not painful</span>
+                    <span>Extremely painful</span>
+                </div>
+            </div>
+
+            <!-- Q3: Current solution -->
+            <div class="question">
+                <label for="current_solution">What are you currently using to handle this?</label>
+                <textarea id="current_solution" name="current_solution" placeholder="Tools, workarounds, manual processes..."></textarea>
+            </div>
+
+            <!-- Q4: Email (optional) -->
+            <div class="question">
+                <label for="email">
+                    Email
+                    <span class="hint">Optional — we'll notify you when we launch a solution.</span>
+                </label>
+                <input type="email" id="email" name="email" placeholder="you@example.com">
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('surveyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(e.target);
+            var data = Object.fromEntries(formData);
+
+            // TODO: Send to your backend
+            // Options:
+            //   1. Google Sheets via Apps Script: fetch('YOUR_APPS_SCRIPT_URL', { method: 'POST', body: JSON.stringify(data) })
+            //   2. Airtable API: fetch('https://api.airtable.com/v0/BASE_ID/TABLE', { ... })
+            //   3. Custom API endpoint: fetch('/api/survey', { ... })
+            //   4. Netlify Forms: add netlify attribute to <form>
+
+            console.log('Survey response:', JSON.stringify(data, null, 2));
+
+            // Track analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'survey_complete', {
+                    event_category: 'conversion',
+                    pain_rating: data.pain,
+                    has_email: data.email ? 'yes' : 'no'
+                });
+            }
+
+            // Show thank you
+            document.getElementById('surveyContainer').innerHTML =
+                '<div class="thank-you">' +
+                '  <h2>Thank you!</h2>' +
+                '  <p>Your response helps us understand the problem better.' +
+                (data.email ? ' We\'ll be in touch when we have something to show you.' : '') +
+                '  </p>' +
+                '</div>';
+        });
+    </script>
+</body>
+</html>
