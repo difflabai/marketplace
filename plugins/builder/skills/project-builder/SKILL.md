@@ -282,4 +282,3 @@ Templates are located in `assets/templates/` and follow the `.project` standard 
 ## References
 
 - [.project Standard Specification v1](https://github.com/difflabai/protocols/blob/main/project-standard/spec/v1/specification.md)
-- [Original ProjectBuilder Skill](https://github.com/leegonzales/AISkills/tree/main/ProjectBuilder/project-builder)
