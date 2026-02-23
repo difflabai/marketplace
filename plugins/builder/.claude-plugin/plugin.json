@@ -1,0 +1,8 @@
+{
+  "name": "builder",
+  "version": "1.0.0",
+  "description": "Project scaffolding — build .project/ structures for any AI coding tool",
+  "author": {
+    "name": "DiffLab AI"
+  }
+}

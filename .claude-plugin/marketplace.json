@@ -29,6 +29,17 @@
       },
       "category": "productivity",
       "tags": ["product", "pipeline", "delivery"]
+    },
+    {
+      "name": "builder",
+      "source": "./plugins/builder",
+      "description": "Project scaffolding — build .project/ structures for any AI coding tool",
+      "version": "1.0.0",
+      "author": {
+        "name": "DiffLab AI"
+      },
+      "category": "development",
+      "tags": ["project", "scaffolding", "project-standard", "builder"]
     }
   ]
 }
