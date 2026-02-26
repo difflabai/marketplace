@@ -5,7 +5,23 @@ description: "Product Delivery Engine — automate DiffLab's 6-stage product pip
 
 # Product Delivery Engine (PDE)
 
-Specification-driven product pipeline. High-level aims (behavior + evaluation) are separated from implementation details (numbered implementation folders). Each stage produces markdown artifacts committed to the `difflabai/pde` repo with human approval before advancing.
+Specification-driven product pipeline. High-level aims (behavior + evaluation) are separated from implementation details (numbered implementation folders). Each stage produces markdown artifacts committed to the configured PDE location (see Configuration) with human approval before advancing.
+
+## Configuration
+
+### PDE Location
+
+Before executing any pipeline stage, resolve the PDE storage location:
+
+1. Read `.project/settings.local` in the current workspace root. Look for a line matching `pde_location = <value>`
+2. If not found or the file does not exist, read `.claude/settings.local` in the current workspace root. Look for the same key.
+3. If neither file contains the setting, ask the user: "Where should PDE artifacts be stored? Provide a GitHub repo (e.g., `owner/repo`) or a local path (e.g., `./pde` or `/absolute/path/to/pde`)."
+
+Store the resolved value as `{pde-location}` for all operations in this skill.
+
+**Detecting location type:**
+- If `{pde-location}` matches the pattern `owner/repo` (exactly one `/`, no leading `/`, `.`, or `~`), treat it as a **remote GitHub repository**.
+- Otherwise, treat it as a **local path**.
 
 ## Quick Start
 
@@ -14,7 +30,7 @@ Specification-driven product pipeline. High-level aims (behavior + evaluation) a
 1. User provides product idea or market signal
 2. Generate `behavior.md` from `assets/templates/behavior.md`
 3. Write locally to `specs/{product-name}/behavior.md` and present to user
-4. On approval, push to PDE repo via `gh api` and launch 3 parallel analysis subagents (ICP, monetization, business model)
+4. On approval, push to PDE location (see PDE Storage Operations) and launch 3 parallel analysis subagents (ICP, monetization, business model)
 5. Present analysis results, then advance to Filter
 
 ### Advance Existing Product
@@ -63,48 +79,73 @@ Each product has two layers:
 
 To start a new implementation: create `implementation-NN/` where NN is the next number. New implementations inherit the same `behavior.md` and `evaluation.md` — only the implementation approach changes.
 
-## PDE Repo Operations
+## PDE Storage Operations
 
-The PDE repo lives at `github.com/difflabai/pde`. All product artifacts go in `specs/{product-name}/`. Use the `gh` CLI for all repo operations — do not clone the repo locally.
+All product artifacts go in `specs/{product-name}/` within `{pde-location}`. The commands differ based on whether the location is a remote GitHub repository or a local path.
 
-### Reading Files
+### Remote Repository
+
+Use the `gh` CLI for all repo operations — do not clone the repo locally.
+
+#### Reading Files
 
 ```bash
-gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md \
+gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
   --jq '.content' | base64 -d
 ```
 
-### Writing Files
-
-Create or update a file in the repo:
+#### Writing Files
 
 ```bash
 # Write a new file (no SHA needed)
-gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md \
+gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
   --method PUT \
   --field message="{Stage}: {product-name} — {brief description}" \
   --field content="$(base64 -i /path/to/local/file.md)"
 
 # Update an existing file (SHA required)
-SHA=$(gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md --jq '.sha')
-gh api repos/difflabai/pde/contents/specs/{product-name}/{file}.md \
+SHA=$(gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md --jq '.sha')
+gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
   --method PUT \
   --field message="{Stage}: {product-name} — {brief description}" \
   --field content="$(base64 -i /path/to/local/file.md)" \
   --field sha="$SHA"
 ```
 
-### Listing Product Files (Check Status)
+#### Listing Product Files (Check Status)
 
 ```bash
-gh api repos/difflabai/pde/contents/specs/{product-name} --jq '.[].name'
+gh api repos/{pde-location}/contents/specs/{product-name} --jq '.[].name'
+```
+
+### Local Path
+
+Use standard file system operations.
+
+#### Reading Files
+
+```bash
+cat {pde-location}/specs/{product-name}/{file}.md
+```
+
+#### Writing Files
+
+```bash
+mkdir -p {pde-location}/specs/{product-name}
+cp /path/to/local/file.md {pde-location}/specs/{product-name}/{file}.md
+```
+
+#### Listing Product Files (Check Status)
+
+```bash
+ls {pde-location}/specs/{product-name}/
 ```
 
 ### Workflow
 
 1. Generate the artifact locally in `specs/{product-name}/` within the current workspace
 2. Present to user for approval
-3. On approval, push to the PDE repo using `gh api`
+3. On approval, push to the PDE location (see PDE Storage Operations)
 
 ### Product Naming
 
@@ -140,7 +181,7 @@ Use kebab-case: `ai-code-reviewer`, `spec-validator`, `landing-gen`
 3. Focus on what the product should do and must not do, not how to build it
 4. Do NOT include market research, competitor analysis, or market signals — those belong in the parallel analysis files (business-model-analysis.md)
 5. Write locally to `specs/{product-name}/behavior.md` and present to user
-6. **Gate:** User approves behavior spec → push to PDE repo via `gh api`, then launch parallel analysis
+6. **Gate:** User approves behavior spec → push to PDE location, then launch parallel analysis
 
 ### Parallel Analysis (Post-Intake)
 
@@ -153,22 +194,24 @@ Before launching, verify the companion skills exist (sibling directories within 
 
 If any skill file is missing, warn the user and skip that analysis.
 
-**Launch these 3 Task calls in one message:**
+**Launch these 3 Task calls in one message.**
+
+For each subagent prompt, include the resolved `{pde-location}` value and whether it is a remote repo or local path. For remote repos, subagents use `gh api repos/{pde-location}/contents/...` commands. For local paths, subagents use standard file system commands (`cat` to read, `mkdir -p` + `cp` to write).
 
 Task call 1 — ICP Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"ICP analysis for {product-name}"`
-- `prompt`: `"You are an Ideal Customer Profile analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/icp-analysis/SKILL.md'. Read the ICP analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/icp-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/icp-analysis.md --method PUT --field message='Analysis: {product-name} — ICP' --field content=\"$(base64 -i specs/{product-name}/icp-analysis.md)\""`
+- `prompt`: `"You are an Ideal Customer Profile analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for specs/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/icp-analysis/SKILL.md'. Read the ICP analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/icp-analysis.md, then push it to the PDE location: {write-command for specs/{product-name}/icp-analysis.md with message 'Analysis: {product-name} — ICP'}"`
 
 Task call 2 — Monetization Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Monetization analysis for {product-name}"`
-- `prompt`: `"You are a monetization strategy analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/monetization-analysis/SKILL.md'. Read the monetization analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/monetization-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/monetization-analysis.md --method PUT --field message='Analysis: {product-name} — monetization' --field content=\"$(base64 -i specs/{product-name}/monetization-analysis.md)\""`
+- `prompt`: `"You are a monetization strategy analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for specs/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/monetization-analysis/SKILL.md'. Read the monetization analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/monetization-analysis.md, then push it to the PDE location: {write-command for specs/{product-name}/monetization-analysis.md with message 'Analysis: {product-name} — monetization'}"`
 
 Task call 3 — Business Model Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Business model analysis for {product-name}"`
-- `prompt`: `"You are a business model analyst. Read the behavior spec from the PDE repo: run gh api repos/difflabai/pde/contents/specs/{product-name}/behavior.md --jq '.content' | base64 -d. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/business-model-analysis/SKILL.md'. Read the business model analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/business-model-analysis.md, then push it to the PDE repo: gh api repos/difflabai/pde/contents/specs/{product-name}/business-model-analysis.md --method PUT --field message='Analysis: {product-name} — business model' --field content=\"$(base64 -i specs/{product-name}/business-model-analysis.md)\""`
+- `prompt`: `"You are a business model analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for specs/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/business-model-analysis/SKILL.md'. Read the business model analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/business-model-analysis.md, then push it to the PDE location: {write-command for specs/{product-name}/business-model-analysis.md with message 'Analysis: {product-name} — business model'}"`
 
 **After all 3 Task results return:**
 
@@ -279,7 +322,7 @@ Every stage follows this pattern:
    - **Approve** → commit artifact, advance
    - **Iterate** → user provides specific feedback; incorporate it, regenerate the artifact, and present again (do not advance until approved)
    - **Decommission** → write `DECOMMISSIONED.md` with reason
-4. **Push** — On approval: push artifact to PDE repo via `gh api` (see PDE Repo Operations)
+4. **Push** — On approval: push artifact to PDE location (see PDE Storage Operations)
 
 ## Decommissioning a Product
 
@@ -291,7 +334,7 @@ When a product fails at any stage:
    - Reason (which criteria from `evaluation.md` failed)
    - Lessons learned
    - Whether pivot is recommended
-2. Push to PDE repo via `gh api` with message: `"DECOMMISSIONED: {product-name} — {reason}"`
+2. Push to PDE location with message: `"DECOMMISSIONED: {product-name} — {reason}"`
 
 ## Research Capabilities
 

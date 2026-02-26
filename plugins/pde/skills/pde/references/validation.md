@@ -316,7 +316,7 @@ Simplest option since PDE repo is already on GitHub:
 
 1. Place HTML files in `specs/{product-name}/assets/`
 2. Enable GitHub Pages in repo settings (source: main branch)
-3. Landing page available at `https://difflabai.github.io/pde/specs/{product-name}/assets/landing-page.html`
+3. Landing page available at `https://{org}.github.io/{repo}/specs/{product-name}/assets/landing-page.html` (where `{org}/{repo}` is the configured `{pde-location}`)
 
 **Note:** GitHub Pages URL is long. Use a URL shortener or custom domain for traffic campaigns.
 
