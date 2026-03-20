@@ -128,20 +128,24 @@ def get_commit_detail(sess: requests.Session, owner: str, repo: str, sha: str) -
     return api_get(sess, f"{API_BASE}/repos/{owner}/{repo}/commits/{sha}")
 
 
-def collect(org: str, days: int, include_merges: bool = False) -> dict:
+def collect(org: str, days: int, include_merges: bool = False, quiet: bool = False) -> dict:
     """Main collection routine."""
     token = get_token()
     sess = make_session(token)
+
+    def log(msg: str) -> None:
+        if not quiet:
+            print(msg, file=sys.stderr)
 
     now = datetime.now(timezone.utc)
     since_dt = now - timedelta(days=days)
     since_iso = since_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     until_iso = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    print(f"Collecting contributions for {org} ({days} days) …", file=sys.stderr)
+    log(f"Collecting contributions for {org} ({days} days) …")
 
     repos = list_org_repos(sess, org)
-    print(f"Found {len(repos)} repositories", file=sys.stderr)
+    log(f"Found {len(repos)} repositories")
 
     # Filter to repos pushed within the window
     active_repos = []
@@ -150,7 +154,7 @@ def collect(org: str, days: int, include_merges: bool = False) -> dict:
         if pushed >= since_iso:
             active_repos.append(r)
 
-    print(f"{len(active_repos)} repositories with recent activity", file=sys.stderr)
+    log(f"{len(active_repos)} repositories with recent activity")
 
     # Collect per-contributor data
     contributors: dict[str, dict] = {}  # login -> {name, repos: {repo: {commits, files, +, -}}}
@@ -159,7 +163,7 @@ def collect(org: str, days: int, include_merges: bool = False) -> dict:
     for repo_info in active_repos:
         repo_name = repo_info["name"]
         owner = repo_info["owner"]["login"]
-        print(f"  Scanning {owner}/{repo_name} …", file=sys.stderr)
+        log(f"  Scanning {owner}/{repo_name} …")
 
         try:
             commits = get_commits(sess, owner, repo_name, since_iso, until_iso, include_merges)
@@ -180,8 +184,12 @@ def collect(org: str, days: int, include_merges: bool = False) -> dict:
                 (commit_summary.get("commit", {}).get("author") or {}).get("name", author_login)
             )
 
-            # Skip bots
-            if author_login.endswith("[bot]"):
+            # Skip bots — check both login and commit author name
+            if (
+                author_login.endswith("[bot]")
+                or author_name.endswith("[bot]")
+                or author_login.lower() in ("dependabot", "copilot", "renovate")
+            ):
                 continue
 
             # Get detailed stats
@@ -289,11 +297,21 @@ def main():
     parser.add_argument("--org", required=True, help="GitHub organization name")
     parser.add_argument("--days", type=int, default=7, help="Look-back period in days (default: 7)")
     parser.add_argument("--include-merges", action="store_true", help="Include merge commits")
+    parser.add_argument("--output", "-o", help="Write JSON to file instead of stdout")
+    parser.add_argument("--quiet", "-q", action="store_true", help="Suppress progress messages on stderr")
     args = parser.parse_args()
 
-    result = collect(args.org, args.days, args.include_merges)
-    json.dump(result, sys.stdout, indent=2, default=str)
-    print()  # trailing newline
+    result = collect(args.org, args.days, args.include_merges, quiet=args.quiet)
+
+    if args.output:
+        with open(args.output, "w") as f:
+            json.dump(result, f, indent=2, default=str)
+            f.write("\n")
+        if not args.quiet:
+            print(f"Output written to {args.output}", file=sys.stderr)
+    else:
+        json.dump(result, sys.stdout, indent=2, default=str)
+        print()  # trailing newline
 
 
 if __name__ == "__main__":

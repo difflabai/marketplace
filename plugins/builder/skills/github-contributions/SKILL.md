@@ -31,6 +31,8 @@ Generate contribution summaries across all active repositories in a GitHub organ
 | `ORG` | *(required)* | GitHub organization name |
 | `TIME_PERIOD` | `7` | Number of days to look back |
 | `GITHUB_TOKEN` | *(from env)* | GitHub personal access token (uses `gh` auth if not set) |
+| `--output` / `-o` | *(stdout)* | Write JSON to a file instead of stdout |
+| `--quiet` / `-q` | `false` | Suppress progress messages on stderr |
 
 ## Usage
 
@@ -42,17 +44,20 @@ When the user asks for a contribution report:
 2. Determine time period (default: 7 days)
 3. Run the collection script:
    ```bash
-   python3 <skill_dir>/scripts/collect_contributions.py --org <ORG> --days <TIME_PERIOD>
+   python3 <skill_dir>/scripts/collect_contributions.py --org <ORG> --days <TIME_PERIOD> -o /tmp/contributions.json
    ```
-4. The script outputs JSON to stdout. Parse it and format the report.
+4. The script writes JSON to the output file (or stdout if `-o` is omitted). Parse and format the report.
 5. Format the output using the template below.
 
 ### Manual Run
 
 ```bash
-# Using gh CLI token
+# Using gh CLI token — write to file to keep output clean
 export GITHUB_TOKEN=$(gh auth token)
-python3 scripts/collect_contributions.py --org difflabai --days 7
+python3 scripts/collect_contributions.py --org difflabai --days 7 -o /tmp/contributions.json
+
+# Or pipe to stdout (progress goes to stderr)
+python3 scripts/collect_contributions.py --org difflabai --days 7 -q
 ```
 
 ## Output Format
@@ -113,5 +118,5 @@ python3 scripts/collect_contributions.py --org difflabai --days 7 | python3 scri
 - Uses GitHub REST API (not GraphQL) for broad compatibility
 - Respects rate limits with automatic retry on 429
 - Merge commits are excluded by default (use `--include-merges` to include)
-- Bot accounts (those ending in `[bot]`) are excluded by default
+- Bot accounts are excluded by default (login or name ending in `[bot]`, plus known bots like dependabot, copilot, renovate)
 - If `GITHUB_TOKEN` is not set, attempts to use `gh auth token`
