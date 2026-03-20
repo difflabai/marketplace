@@ -12,7 +12,27 @@ import argparse
 import json
 import sys
 
-MAX_COMMITS_PER_REPO = 15
+MAX_COMMITS_PER_PR = 10
+MAX_DIRECT_COMMITS = 15
+
+
+def _format_commit_list(commits: list[dict], max_commits: int, prefix: str) -> list[str]:
+    """Format a list of commits with deduplication and truncation."""
+    commit_lines: list[str] = []
+    seen_messages: set[str] = set()
+    shown = 0
+    for commit in commits:
+        msg = commit["message"].strip()
+        if msg and msg not in seen_messages:
+            seen_messages.add(msg)
+            commit_lines.append(f"{prefix}{msg}")
+            shown += 1
+            if shown >= max_commits:
+                remaining = len(commits) - shown
+                if remaining > 0:
+                    commit_lines.append(f"{prefix}*… and {remaining} more commits*")
+                break
+    return commit_lines
 
 
 def format_report(data: dict) -> str:
@@ -29,6 +49,23 @@ def format_report(data: dict) -> str:
     lines.append(f"**Period:** {start_date} → {end_date} ({period['days']} days)")
     lines.append(f"**Active Repositories:** {data['active_repos']} / {data['total_repos']}")
     lines.append("")
+
+    # Repository PR overview
+    repo_summaries = data.get("repo_summaries", [])
+    if any(r.get("prs") for r in repo_summaries):
+        lines.append("## Repository Activity")
+        lines.append("")
+        for repo in repo_summaries:
+            repo_prs = repo.get("prs", [])
+            if not repo_prs:
+                continue
+            lines.append(f"### {repo['name']}")
+            for pr in repo_prs:
+                attr = ""
+                if pr.get("attributed_to"):
+                    attr = f" *(attributed to @{pr['attributed_to']})*"
+                lines.append(f"- [PR #{pr['number']}]({pr['url']}): {pr['title']} — @{pr['author']}{attr}")
+            lines.append("")
 
     contributors = data.get("contributors", {})
 
@@ -71,22 +108,27 @@ def format_report(data: dict) -> str:
             lines.append(
                 f"- **Lines:** +{repo_data['total_additions']} / -{repo_data['total_deletions']}"
             )
-            lines.append("- **Key changes:**")
 
-            # List commit messages (deduplicated, max 15 per repo)
-            seen_messages = set()
-            shown = 0
-            for commit in repo_data["commits"]:
-                msg = commit["message"].strip()
-                if msg and msg not in seen_messages:
-                    seen_messages.add(msg)
-                    lines.append(f"  - {msg}")
-                    shown += 1
-                    if shown >= MAX_COMMITS_PER_REPO:
-                        remaining = len(repo_data["commits"]) - shown
-                        if remaining > 0:
-                            lines.append(f"  - *… and {remaining} more commits*")
-                        break
+            # List PRs with their commits
+            prs = repo_data.get("prs", [])
+            if prs:
+                for pr in prs:
+                    lines.append("")
+                    lines.append(
+                        f"#### [PR #{pr['number']}]({pr['url']}): {pr['title']}"
+                    )
+                    lines.append(
+                        f"- **Lines:** +{pr['total_additions']} / -{pr['total_deletions']}"
+                    )
+                    lines.append("- **Commits:**")
+                    lines.extend(_format_commit_list(pr["commits"], MAX_COMMITS_PER_PR, "  - "))
+
+            # List direct commits (not associated with a PR)
+            direct_commits = repo_data.get("direct_commits", [])
+            if direct_commits:
+                lines.append("")
+                lines.append("#### Direct commits (no PR)")
+                lines.extend(_format_commit_list(direct_commits, MAX_DIRECT_COMMITS, "- "))
 
             lines.append("")
 
