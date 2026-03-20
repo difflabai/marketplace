@@ -1,0 +1,8 @@
+{
+  "name": "github-contributions",
+  "version": "1.0.0",
+  "description": "GitHub contribution summaries — collect and report on org-wide activity",
+  "author": {
+    "name": "DiffLab AI"
+  }
+}
