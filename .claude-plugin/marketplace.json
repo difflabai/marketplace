@@ -42,15 +42,15 @@
       "tags": ["project", "scaffolding", "project-standard", "builder"]
     },
     {
-      "name": "github-contributions",
-      "source": "./plugins/github-contributions",
-      "description": "GitHub contribution summaries — collect and report on org-wide activity",
+      "name": "teams",
+      "source": "./plugins/teams",
+      "description": "Team productivity skills — contribution summaries, impact reports, and more",
       "version": "1.1.0",
       "author": {
         "name": "DiffLab AI"
       },
       "category": "productivity",
-      "tags": ["github", "contributions", "reporting", "teams"]
+      "tags": ["teams", "contributions", "reporting", "impact"]
     }
   ]
 }
