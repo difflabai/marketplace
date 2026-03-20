@@ -17,7 +17,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Optional
 
 import requests
 
@@ -56,7 +56,7 @@ def make_session(token: str) -> requests.Session:
     return sess
 
 
-def api_get(sess: requests.Session, url: str, params: dict | None = None) -> Any:
+def api_get(sess: requests.Session, url: str, params: Optional[dict] = None) -> Any:
     """GET with pagination and rate-limit handling."""
     results: list[Any] = []
     params = dict(params or {})
@@ -192,10 +192,13 @@ def collect(org: str, days: int, include_merges: bool = False, quiet: bool = Fal
             ):
                 continue
 
-            # Get detailed stats
+            # Get detailed stats (N+1 API calls — one per commit. This is a
+            # known limitation; for very large orgs this may be slow or hit rate
+            # limits. The REST API does not offer a batch endpoint for commit details.)
             try:
                 detail = get_commit_detail(sess, owner, repo_name, commit_summary["sha"])
-            except requests.HTTPError:
+            except requests.HTTPError as e:
+                print(f"Warning: Failed to fetch details for commit {commit_summary['sha']}: {e}", file=sys.stderr)
                 continue
 
             stats = detail.get("stats", {})

@@ -116,7 +116,8 @@ python3 scripts/collect_contributions.py --org difflabai --days 7 | python3 scri
 ## Notes
 
 - Uses GitHub REST API (not GraphQL) for broad compatibility
-- Respects rate limits with automatic retry on 429
+- Respects rate limits with automatic retry on 403/429
 - Merge commits are excluded by default (use `--include-merges` to include)
 - Bot accounts are excluded by default (login or name ending in `[bot]`, plus known bots like dependabot, copilot, renovate)
 - If `GITHUB_TOKEN` is not set, attempts to use `gh auth token`
+- **Performance:** Fetching commit details requires one API call per commit (N+1). For very large or active organizations this may be slow and could hit rate limits despite automatic back-off. Consider using a shorter `--days` window for large orgs

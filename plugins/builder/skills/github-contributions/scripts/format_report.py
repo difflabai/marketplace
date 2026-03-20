@@ -12,6 +12,8 @@ import argparse
 import json
 import sys
 
+MAX_COMMITS_PER_REPO = 15
+
 
 def format_report(data: dict) -> str:
     """Convert contribution JSON into a markdown report."""
@@ -80,7 +82,7 @@ def format_report(data: dict) -> str:
                     seen_messages.add(msg)
                     lines.append(f"  - {msg}")
                     shown += 1
-                    if shown >= 15:
+                    if shown >= MAX_COMMITS_PER_REPO:
                         remaining = len(repo_data["commits"]) - shown
                         if remaining > 0:
                             lines.append(f"  - *… and {remaining} more commits*")
