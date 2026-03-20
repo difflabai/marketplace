@@ -14,7 +14,7 @@ Each stage produces markdown artifacts. High-level aims (`behavior.md`, `evaluat
 ### Spec Structure
 
 ```
-specs/{product-name}/
+products/{product-name}/
 ├── behavior.md                    # Stage 1: desired behavior + value proposition
 ├── evaluation.md                  # Stage 2: success criteria for all stages
 ├── icp-analysis.md                # Post-Stage 1 parallel analysis
@@ -170,7 +170,7 @@ Define the minimum viable feature set and technical approach for a 2-4 week buil
 ### Output
 
 ```
-specs/{product-name}/implementation-01/
+products/{product-name}/implementation-01/
 ├── architecture.md    # Tech stack, infrastructure, key decisions
 ├── build-spec.md      # MVP features, timeline, team allocation
 ├── tests.md           # Behavioral tests derived from behavior.md

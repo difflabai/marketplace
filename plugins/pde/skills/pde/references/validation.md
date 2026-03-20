@@ -314,9 +314,9 @@ If using PostHog (self-hostable, more privacy-friendly):
 
 Simplest option since PDE repo is already on GitHub:
 
-1. Place HTML files in `specs/{product-name}/assets/`
+1. Place HTML files in `products/{product-name}/assets/`
 2. Enable GitHub Pages in repo settings (source: main branch)
-3. Landing page available at `https://{org}.github.io/{repo}/specs/{product-name}/assets/landing-page.html` (where `{org}/{repo}` is the configured `{pde-location}`)
+3. Landing page available at `https://{org}.github.io/{repo}/products/{product-name}/assets/landing-page.html` (where `{org}/{repo}` is the configured `{pde-location}`)
 
 **Note:** GitHub Pages URL is long. Use a URL shortener or custom domain for traffic campaigns.
 
@@ -325,7 +325,7 @@ Simplest option since PDE repo is already on GitHub:
 For more control (serverless functions for form handling):
 
 ```bash
-cd specs/{product-name}/assets/
+cd products/{product-name}/assets/
 npx vercel --prod
 ```
 
