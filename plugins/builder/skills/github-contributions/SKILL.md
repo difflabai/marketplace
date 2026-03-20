@@ -20,9 +20,11 @@ Generate contribution summaries across all active repositories in a GitHub organ
 ## What This Does
 
 1. Queries a GitHub organization for repositories with activity within a configurable time period
-2. For each active repository, collects commit history grouped by author
-3. Gathers: commit messages, files changed, lines added/removed (no diffs)
-4. Produces a structured per-contributor summary across all repositories
+2. For each active repository, collects pull requests and commit history
+3. Associates commits with their pull requests and groups by author
+4. Gathers: commit messages, files changed, lines added/removed (no diffs)
+5. Supports attribution override: if a PR description contains `Requested by @USER in #CHANNEL.`, all commits in that PR are attributed to the mentioned user instead of the PR author
+6. Produces a structured per-contributor summary with PR breakdowns across all repositories
 
 ## Parameters
 
@@ -60,6 +62,16 @@ python3 scripts/collect_contributions.py --org difflabai --days 7 -o /tmp/contri
 python3 scripts/collect_contributions.py --org difflabai --days 7 -q
 ```
 
+## Attribution Override
+
+If a PR description contains the pattern:
+
+```
+Requested by @USERNAME in #CHANNEL.
+```
+
+All commits in that PR are attributed to `@USERNAME` instead of the PR's author. This is useful when an automated tool or bot creates PRs on behalf of a team member.
+
 ## Output Format
 
 Structure the report as follows:
@@ -68,6 +80,12 @@ Structure the report as follows:
 # Team Contributions Report
 **Organization:** {org}
 **Period:** {start_date} → {end_date}
+
+## Repository Activity
+
+### {repo_name}
+- [PR #{number}]({url}): {title} — @{author}
+- [PR #{number}]({url}): {title} — @{author} *(attributed to @{user})*
 
 ---
 
@@ -79,10 +97,16 @@ Structure the report as follows:
 - **Commits:** {count}
 - **Files changed:** {count}
 - **Lines:** +{added} / -{removed}
-- **Key changes:**
+
+#### [PR #{number}]({url}): {title}
+- **Lines:** +{added} / -{removed}
+- **Commits:**
   - {commit_message_1}
   - {commit_message_2}
-  ...
+
+#### Direct commits (no PR)
+- {commit_message_1}
+- {commit_message_2}
 
 ---
 ## Organization Totals
@@ -101,7 +125,10 @@ Structure the report as follows:
 Main collection script. Queries the GitHub API for:
 1. All repositories in the organization
 2. Filters to repos with commits in the time period
-3. Collects commit details per author per repo
+3. Fetches pull requests with activity in the time period
+4. Associates commits with their PRs
+5. Applies attribution override from PR descriptions (`Requested by @USER in #CHANNEL.`)
+6. Collects commit details per author per repo, grouped by PR
 
 Outputs structured JSON to stdout for agent consumption.
 
