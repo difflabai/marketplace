@@ -45,7 +45,7 @@
       "name": "github-contributions",
       "source": "./plugins/github-contributions",
       "description": "GitHub contribution summaries — collect and report on org-wide activity",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "DiffLab AI"
       },
