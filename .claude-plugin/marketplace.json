@@ -40,6 +40,17 @@
       },
       "category": "development",
       "tags": ["project", "scaffolding", "project-standard", "builder"]
+    },
+    {
+      "name": "teams",
+      "source": "./plugins/teams",
+      "description": "Team productivity skills — contribution summaries, impact reports, and more",
+      "version": "1.1.0",
+      "author": {
+        "name": "DiffLab AI"
+      },
+      "category": "productivity",
+      "tags": ["teams", "contributions", "reporting", "impact"]
     }
   ]
 }
