@@ -29,7 +29,7 @@ Store the resolved value as `{pde-location}` for all operations in this skill.
 
 1. User provides product idea or market signal
 2. Generate `behavior.md` from `assets/templates/behavior.md`
-3. Write locally to `specs/{product-name}/behavior.md` and present to user
+3. Write locally to `products/{product-name}/behavior.md` and present to user
 4. On approval, push to PDE location (see PDE Storage Operations) and launch 3 parallel analysis subagents (ICP, monetization, business model)
 5. Present analysis results, then advance to Filter
 
@@ -43,7 +43,7 @@ Store the resolved value as `{pde-location}` for all operations in this skill.
 
 ### Check Status
 
-Scan `specs/{product-name}/` and apply the **first matching rule** (top to bottom):
+Scan `products/{product-name}/` and apply the **first matching rule** (top to bottom):
 
 1. `DECOMMISSIONED.md` exists → **Product decommissioned** — stop
 2. `revenue-report.md` exists → **Stage 6 active**
@@ -71,7 +71,7 @@ Each product has two layers:
 - `implementation-01/build-spec.md` — MVP features, timeline, team allocation
 - `implementation-01/tests.md` — Behavioral tests derived from behavior.md
 - `implementation-01/launch-plan.md` — Soft launch strategy, metrics setup
-- `implementation-01/assets/` — Implementation-specific copies of launch assets (originals live in `specs/{product-name}/assets/`)
+- `implementation-01/assets/` — Implementation-specific copies of launch assets (originals live in `products/{product-name}/assets/`)
 
 ## Implementation Routing
 
@@ -81,7 +81,7 @@ To start a new implementation: create `implementation-NN/` where NN is the next 
 
 ## PDE Storage Operations
 
-All product artifacts go in `specs/{product-name}/` within `{pde-location}`. The commands differ based on whether the location is a remote GitHub repository or a local path.
+All product artifacts go in `products/{product-name}/` within `{pde-location}`. The commands differ based on whether the location is a remote GitHub repository or a local path.
 
 ### Remote Repository
 
@@ -90,7 +90,7 @@ Use the `gh` CLI for all repo operations — do not clone the repo locally.
 #### Reading Files
 
 ```bash
-gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
+gh api repos/{pde-location}/contents/products/{product-name}/{file}.md \
   --jq '.content' | base64 -d
 ```
 
@@ -98,14 +98,14 @@ gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
 
 ```bash
 # Write a new file (no SHA needed)
-gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
+gh api repos/{pde-location}/contents/products/{product-name}/{file}.md \
   --method PUT \
   --field message="{Stage}: {product-name} — {brief description}" \
   --field content="$(base64 -i /path/to/local/file.md)"
 
 # Update an existing file (SHA required)
-SHA=$(gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md --jq '.sha')
-gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
+SHA=$(gh api repos/{pde-location}/contents/products/{product-name}/{file}.md --jq '.sha')
+gh api repos/{pde-location}/contents/products/{product-name}/{file}.md \
   --method PUT \
   --field message="{Stage}: {product-name} — {brief description}" \
   --field content="$(base64 -i /path/to/local/file.md)" \
@@ -115,7 +115,7 @@ gh api repos/{pde-location}/contents/specs/{product-name}/{file}.md \
 #### Listing Product Files (Check Status)
 
 ```bash
-gh api repos/{pde-location}/contents/specs/{product-name} --jq '.[].name'
+gh api repos/{pde-location}/contents/products/{product-name} --jq '.[].name'
 ```
 
 ### Local Path
@@ -125,25 +125,25 @@ Use standard file system operations.
 #### Reading Files
 
 ```bash
-cat {pde-location}/specs/{product-name}/{file}.md
+cat {pde-location}/products/{product-name}/{file}.md
 ```
 
 #### Writing Files
 
 ```bash
-mkdir -p {pde-location}/specs/{product-name}
-cp /path/to/local/file.md {pde-location}/specs/{product-name}/{file}.md
+mkdir -p {pde-location}/products/{product-name}
+cp /path/to/local/file.md {pde-location}/products/{product-name}/{file}.md
 ```
 
 #### Listing Product Files (Check Status)
 
 ```bash
-ls {pde-location}/specs/{product-name}/
+ls {pde-location}/products/{product-name}/
 ```
 
 ### Workflow
 
-1. Generate the artifact locally in `specs/{product-name}/` within the current workspace
+1. Generate the artifact locally in `products/{product-name}/` within the current workspace
 2. Present to user for approval
 3. On approval, push to the PDE location (see PDE Storage Operations)
 
@@ -174,13 +174,13 @@ Use kebab-case: `ai-code-reviewer`, `spec-validator`, `landing-gen`
 ### Stage 1: Intake
 
 **Input:** Market signals, customer conversations, training insights, AI trends
-**Output:** `specs/{product-name}/behavior.md`
+**Output:** `products/{product-name}/behavior.md`
 
 1. Read the template from `assets/templates/behavior.md`
 2. Fill in: problem statement, desired behaviors, boundaries, value proposition, strategic alignment
 3. Focus on what the product should do and must not do, not how to build it
 4. Do NOT include market research, competitor analysis, or market signals — those belong in the parallel analysis files (business-model-analysis.md)
-5. Write locally to `specs/{product-name}/behavior.md` and present to user
+5. Write locally to `products/{product-name}/behavior.md` and present to user
 6. **Gate:** User approves behavior spec → push to PDE location, then launch parallel analysis
 
 ### Parallel Analysis (Post-Intake)
@@ -201,17 +201,17 @@ For each subagent prompt, include the resolved `{pde-location}` value and whethe
 Task call 1 — ICP Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"ICP analysis for {product-name}"`
-- `prompt`: `"You are an Ideal Customer Profile analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for specs/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/icp-analysis/SKILL.md'. Read the ICP analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/icp-analysis.md, then push it to the PDE location: {write-command for specs/{product-name}/icp-analysis.md with message 'Analysis: {product-name} — ICP'}"`
+- `prompt`: `"You are an Ideal Customer Profile analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for products/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/icp-analysis/SKILL.md'. Read the ICP analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/icp-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to products/{product-name}/icp-analysis.md, then push it to the PDE location: {write-command for products/{product-name}/icp-analysis.md with message 'Analysis: {product-name} — ICP'}"`
 
 Task call 2 — Monetization Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Monetization analysis for {product-name}"`
-- `prompt`: `"You are a monetization strategy analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for specs/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/monetization-analysis/SKILL.md'. Read the monetization analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/monetization-analysis.md, then push it to the PDE location: {write-command for specs/{product-name}/monetization-analysis.md with message 'Analysis: {product-name} — monetization'}"`
+- `prompt`: `"You are a monetization strategy analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for products/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/monetization-analysis/SKILL.md'. Read the monetization analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/monetization-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to products/{product-name}/monetization-analysis.md, then push it to the PDE location: {write-command for products/{product-name}/monetization-analysis.md with message 'Analysis: {product-name} — monetization'}"`
 
 Task call 3 — Business Model Analysis:
 - `subagent_type`: `general-purpose`
 - `description`: `"Business model analysis for {product-name}"`
-- `prompt`: `"You are a business model analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for specs/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/business-model-analysis/SKILL.md'. Read the business model analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to specs/{product-name}/business-model-analysis.md, then push it to the PDE location: {write-command for specs/{product-name}/business-model-analysis.md with message 'Analysis: {product-name} — business model'}"`
+- `prompt`: `"You are a business model analyst. The PDE location is '{pde-location}' ({remote|local}). Read the behavior spec: {read-command for products/{product-name}/behavior.md}. Find the PDE plugin directory by running: Glob for '**/plugins/pde/skills/business-model-analysis/SKILL.md'. Read the business model analysis skill instructions from that file. Read the output template from the sibling pde skill's assets: the template is at the same plugin path under skills/pde/assets/templates/business-model-analysis.md. Conduct research using WebSearch, then fill in the template — replace all [Placeholder] markers with actual values. Write the result locally to products/{product-name}/business-model-analysis.md, then push it to the PDE location: {write-command for products/{product-name}/business-model-analysis.md with message 'Analysis: {product-name} — business model'}"`
 
 **After all 3 Task results return:**
 
@@ -222,7 +222,7 @@ Task call 3 — Business Model Analysis:
 ### Stage 2: Filter
 
 **Input:** `behavior.md` + all 3 analysis files
-**Output:** `specs/{product-name}/evaluation.md`
+**Output:** `products/{product-name}/evaluation.md`
 
 1. Read `behavior.md`, `icp-analysis.md`, `monetization-analysis.md`, and `business-model-analysis.md`
 2. Read template from `assets/templates/evaluation.md`
@@ -240,23 +240,23 @@ Asynchronous validation via landing pages and survey funnels. See `references/va
 
 #### Stage 3a: Problem Validation
 
-**Output:** `specs/{product-name}/validation-plan.md` + landing page and survey assets
+**Output:** `products/{product-name}/validation-plan.md` + landing page and survey assets
 
 1. Read `behavior.md` and `evaluation.md` for context
 2. Read template from `assets/templates/validation-plan.md`
 3. Define hypothesis and success criteria (from `evaluation.md` thresholds)
 4. Generate landing page from `assets/templates/landing-page.html` — customize with messaging from `behavior.md`
 5. Generate survey funnel from `assets/templates/survey-funnel.html`
-6. Write assets to `specs/{product-name}/assets/` (shared, not implementation-specific)
+6. Write assets to `products/{product-name}/assets/` (shared, not implementation-specific)
 7. Provide deployment guidance (Vercel, Netlify, or GitHub Pages)
 8. **Gate:** User approves plan and assets → deploy and collect responses
 
 #### Stage 3b: Solution & Willingness to Pay
 
-**Output:** `specs/{product-name}/validation-results.md`
+**Output:** `products/{product-name}/validation-results.md`
 
 1. Review 3a response data (user provides metrics)
-2. If 3a passed, update the landing page in `specs/{product-name}/assets/` — uncomment the Stage 3b sections (solution description, pricing tiers, waitlist form) and fill in values from the behavior spec and validation data
+2. If 3a passed, update the landing page in `products/{product-name}/assets/` — uncomment the Stage 3b sections (solution description, pricing tiers, waitlist form) and fill in values from the behavior spec and validation data
 3. Add waitlist form + pre-order mechanism
 4. Deploy and collect responses
 5. Analyze signal strength against thresholds in `evaluation.md`
@@ -266,13 +266,13 @@ Asynchronous validation via landing pages and survey funnels. See `references/va
 
 ### Stage 4: Build
 
-**Output:** `specs/{product-name}/implementation-NN/` with `architecture.md`, `build-spec.md`, `tests.md`
+**Output:** `products/{product-name}/implementation-NN/` with `architecture.md`, `build-spec.md`, `tests.md`
 
 1. Read `behavior.md` and `evaluation.md` for high-level requirements
 2. Read all analysis and validation artifacts for context
 3. Create the implementation folder:
    ```bash
-   mkdir -p specs/{product-name}/implementation-01/assets
+   mkdir -p products/{product-name}/implementation-01/assets
    ```
 4. Read template from `assets/templates/architecture.md` — define tech stack, infrastructure, key decisions
 5. Read template from `assets/templates/tests.md` — derive behavioral tests from `behavior.md`
@@ -282,7 +282,7 @@ Asynchronous validation via landing pages and survey funnels. See `references/va
 
 ### Stage 5: Launch
 
-**Output:** `specs/{product-name}/implementation-NN/launch-plan.md`
+**Output:** `products/{product-name}/implementation-NN/launch-plan.md`
 
 1. Read `behavior.md`, `evaluation.md`, and all implementation files
 2. Read template from `assets/templates/launch-plan.md`
@@ -290,12 +290,12 @@ Asynchronous validation via landing pages and survey funnels. See `references/va
 4. Set pricing from validation results
 5. Configure metrics from `evaluation.md` thresholds
 6. Create launch checklist
-7. Copy validation assets from `specs/{product-name}/assets/` into `implementation-NN/assets/` for the specific launch configuration (originals stay in the shared location)
+7. Copy validation assets from `products/{product-name}/assets/` into `implementation-NN/assets/` for the specific launch configuration (originals stay in the shared location)
 8. **Gate:** User approves launch plan → execute soft launch
 
 ### Stage 6: Revenue & Scale
 
-**Output:** `specs/{product-name}/revenue-report.md` (product-level, not per-implementation)
+**Output:** `products/{product-name}/revenue-report.md` (product-level, not per-implementation)
 
 1. Read all prior artifacts
 2. Collect metrics from user (MRR, activation, retention, conversion)
@@ -328,7 +328,7 @@ Every stage follows this pattern:
 
 When a product fails at any stage:
 
-1. Write `specs/{product-name}/DECOMMISSIONED.md` with:
+1. Write `products/{product-name}/DECOMMISSIONED.md` with:
    - Stage where decommissioned
    - Date
    - Reason (which criteria from `evaluation.md` failed)
