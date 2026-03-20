@@ -149,7 +149,8 @@ def get_pr_commit_shas(sess: requests.Session, owner: str, repo: str, pr_number:
     """Get commit SHAs for a PR."""
     try:
         commits = api_get(sess, f"{API_BASE}/repos/{owner}/{repo}/pulls/{pr_number}/commits")
-    except requests.HTTPError:
+    except requests.HTTPError as e:
+        print(f"Warning: Failed to fetch commits for PR #{pr_number} in {owner}/{repo}: {e}", file=sys.stderr)
         return []
     return [c["sha"] for c in commits]
 
@@ -161,7 +162,7 @@ def parse_requested_by(body: Optional[str]) -> tuple[Optional[str], Optional[str
     """
     if not body:
         return None, None
-    match = re.search(r'Requested by @(\S+) in #(\S+?)\.', body)
+    match = re.search(r'Requested by @(\S+) in #(\S+?)\.?', body, re.IGNORECASE)
     if match:
         return match.group(1), match.group(2)
     return None, None

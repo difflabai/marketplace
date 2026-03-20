@@ -16,6 +16,25 @@ MAX_COMMITS_PER_PR = 10
 MAX_DIRECT_COMMITS = 15
 
 
+def _format_commit_list(commits: list[dict], max_commits: int, prefix: str) -> list[str]:
+    """Format a list of commits with deduplication and truncation."""
+    commit_lines: list[str] = []
+    seen_messages: set[str] = set()
+    shown = 0
+    for commit in commits:
+        msg = commit["message"].strip()
+        if msg and msg not in seen_messages:
+            seen_messages.add(msg)
+            commit_lines.append(f"{prefix}{msg}")
+            shown += 1
+            if shown >= max_commits:
+                remaining = len(commits) - shown
+                if remaining > 0:
+                    commit_lines.append(f"{prefix}*… and {remaining} more commits*")
+                break
+    return commit_lines
+
+
 def format_report(data: dict) -> str:
     """Convert contribution JSON into a markdown report."""
     lines: list[str] = []
@@ -33,8 +52,7 @@ def format_report(data: dict) -> str:
 
     # Repository PR overview
     repo_summaries = data.get("repo_summaries", [])
-    repos_with_prs = [r for r in repo_summaries if r.get("prs")]
-    if repos_with_prs:
+    if any(r.get("prs") for r in repo_summaries):
         lines.append("## Repository Activity")
         lines.append("")
         for repo in repo_summaries:
@@ -103,39 +121,14 @@ def format_report(data: dict) -> str:
                         f"- **Lines:** +{pr['total_additions']} / -{pr['total_deletions']}"
                     )
                     lines.append("- **Commits:**")
-
-                    seen_messages = set()
-                    shown = 0
-                    for commit in pr["commits"]:
-                        msg = commit["message"].strip()
-                        if msg and msg not in seen_messages:
-                            seen_messages.add(msg)
-                            lines.append(f"  - {msg}")
-                            shown += 1
-                            if shown >= MAX_COMMITS_PER_PR:
-                                remaining = len(pr["commits"]) - shown
-                                if remaining > 0:
-                                    lines.append(f"  - *… and {remaining} more commits*")
-                                break
+                    lines.extend(_format_commit_list(pr["commits"], MAX_COMMITS_PER_PR, "  - "))
 
             # List direct commits (not associated with a PR)
             direct_commits = repo_data.get("direct_commits", [])
             if direct_commits:
                 lines.append("")
                 lines.append("#### Direct commits (no PR)")
-                seen_messages = set()
-                shown = 0
-                for commit in direct_commits:
-                    msg = commit["message"].strip()
-                    if msg and msg not in seen_messages:
-                        seen_messages.add(msg)
-                        lines.append(f"- {msg}")
-                        shown += 1
-                        if shown >= MAX_DIRECT_COMMITS:
-                            remaining = len(direct_commits) - shown
-                            if remaining > 0:
-                                lines.append(f"- *… and {remaining} more commits*")
-                            break
+                lines.extend(_format_commit_list(direct_commits, MAX_DIRECT_COMMITS, "- "))
 
             lines.append("")
 

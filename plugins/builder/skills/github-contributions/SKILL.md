@@ -85,7 +85,7 @@ Structure the report as follows:
 
 ### {repo_name}
 - [PR #{number}]({url}): {title} — @{author}
-- [PR #{number}]({url}): {title} — @{author} *(attributed to @{user})*
+- [PR #{number}]({url}): {title} — @{author} *(attributed to @{attributed_to})*
 
 ---
 
