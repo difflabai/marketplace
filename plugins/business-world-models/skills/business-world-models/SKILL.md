@@ -123,7 +123,7 @@ prefix is stripped before comparison).
   "name": "bwm.models.update",
   "arguments": {
     "id": "local:demo.thing",
-    "meta": { "id": "demo.thing", "name": "Renamed", ... }
+    "meta": { "id": "demo.thing", "name": "Renamed" }
   }
 }
 ```

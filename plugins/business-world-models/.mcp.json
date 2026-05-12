@@ -7,7 +7,7 @@
         "mcp-remote",
         "${BWM_MCP_URL:-http://localhost:3000/admin/bwm/mcp/sse}",
         "--header",
-        "Authorization:Bearer ${BWM_TOKEN}"
+        "Authorization: Bearer ${BWM_TOKEN}"
       ]
     }
   }
