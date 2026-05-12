@@ -51,6 +51,18 @@
       },
       "category": "productivity",
       "tags": ["teams", "contributions", "reporting", "impact"]
+    },
+    {
+      "name": "business-world-models",
+      "source": "./plugins/business-world-models",
+      "description": "Browse, search, and edit DiffLab Business World Models via the BWM MCP server",
+      "version": "0.1.0",
+      "author": {
+        "name": "Differential AI Lab"
+      },
+      "homepage": "https://github.com/difflabai/business-world-models",
+      "category": "modeling",
+      "tags": ["models", "forecasting", "value-stream", "mcp"]
     }
   ]
 }

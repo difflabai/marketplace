@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "business-world-models": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "${BWM_MCP_URL:-http://localhost:3000/admin/bwm/mcp/sse}",
+        "--header",
+        "Authorization: Bearer ${BWM_TOKEN}"
+      ]
+    }
+  }
+}
