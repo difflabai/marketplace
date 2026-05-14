@@ -18,6 +18,10 @@ MCP servers are configured automatically on install.
 | Plugin | Description |
 |--------|-------------|
 | [dreamsolve](./plugins/dreamsolve) | Project management, file handling, and AI agents via DreamSolve MCP |
+| [pde](./plugins/pde) | Product Delivery Engine — automate DiffLab's 6-stage product pipeline |
+| [builder](./plugins/builder) | Project scaffolding — build .project/ structures for any AI coding tool |
+| [teams](./plugins/teams) | Team productivity skills — contribution summaries, impact reports, and more |
+| [business-world-models](./plugins/business-world-models) | Browse, search, and edit DiffLab Business World Models via the BWM MCP server |
 
 ## Testing Locally
 
