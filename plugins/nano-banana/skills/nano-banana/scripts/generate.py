@@ -100,10 +100,22 @@ def read_history(hdir: Path) -> list[dict]:
     p = history_jsonl(hdir)
     if not p.is_file():
         return []
-    return [
-        json.loads(line) for line in p.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+    records: list[dict] = []
+    for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            records.append(json.loads(line))
+        except json.JSONDecodeError as e:
+            # A partial/corrupt line — usually an interrupted write or a
+            # hand-edit. Skip rather than crash the whole CLI, but tell the
+            # user so silent corruption is visible.
+            print(
+                f"generate.py: warning: skipping malformed history line {n} "
+                f"in {p}: {e}",
+                file=sys.stderr,
+            )
+    return records
 
 
 def resolve_history_ref(hdir: Path, *, index: int | None,
