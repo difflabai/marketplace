@@ -1,0 +1,9 @@
+{
+  "name": "nano-banana",
+  "description": "Generate and edit AI images via Google's Gemini image models (Nano Banana) using a direct REST call — no MCP server required. Ships one skill (/nano-banana) that wraps a bundled pure-stdlib Python CLI with on-disk history for session-aware features (continue-edit, history references).",
+  "version": "0.1.0",
+  "author": {
+    "name": "difflabai"
+  },
+  "repository": "https://github.com/difflabai/marketplace"
+}
